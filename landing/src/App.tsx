@@ -173,14 +173,46 @@ function App() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="cta">
-        <h2>Ready to Get a Grip on Your AI?</h2>
-        <p>Let's build something that doesn't just work - it performs.</p>
-        <div className="cta-buttons">
-          <button className="btn-primary">Start Your Project</button>
-          <button className="btn-secondary">See Case Studies</button>
-        </div>
+      {/* Contact Section */}
+      <section className="contact" id="contact">
+        <h2 className="section-title">Get in Touch</h2>
+        <p className="section-subtitle">Ready to start your AI project? Let's talk.</p>
+        <form 
+          className="contact-form"
+          action="https://formspree.io/f/YOUR_FORM_ID"
+          method="POST"
+        >
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="name">Name</label>
+              <input type="text" id="name" name="name" required placeholder="Your name" />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input type="email" id="email" name="email" required placeholder="you@company.com" />
+            </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="company">Company</label>
+            <input type="text" id="company" name="company" placeholder="Your company (optional)" />
+          </div>
+          <div className="form-group">
+            <label htmlFor="service">Service Interest</label>
+            <select id="service" name="service">
+              <option value="">Select a service...</option>
+              <option value="ai-development">AI Development</option>
+              <option value="mcp-servers">MCP Servers & Automations</option>
+              <option value="chatbots">AI Assistants & Chatbots</option>
+              <option value="consulting">AI Consulting</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="message">Message</label>
+            <textarea id="message" name="message" rows={5} required placeholder="Tell us about your project..."></textarea>
+          </div>
+          <button type="submit" className="btn-primary btn-submit">Send Message</button>
+        </form>
       </section>
 
       {/* Footer */}
@@ -203,7 +235,7 @@ function App() {
               <a href="#">About</a>
               <a href="#">Blog</a>
               <a href="#">Careers</a>
-              <a href="#">Contact</a>
+              <a href="#contact">Contact</a>
             </div>
             <div className="footer-column">
               <h4>Legal</h4>

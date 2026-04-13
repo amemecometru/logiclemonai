@@ -330,6 +330,82 @@ section {
   background: var(--lemon-dark);
 }
 
+/* Contact Form */
+.contact {
+  background: var(--slate);
+  padding: 6rem 2rem;
+}
+
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--steel);
+  border-radius: 16px;
+  padding: 2.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  color: var(--white);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--deep-navy);
+  border: 1px solid var(--steel);
+  border-radius: 8px;
+  color: var(--white);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--silver);
+  opacity: 0.7;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--lemon-yellow);
+  box-shadow: 0 0 0 3px rgba(255, 225, 53, 0.1);
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.form-group select option {
+  background: var(--deep-navy);
+  color: var(--white);
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}
+
 /* CTA */
 .cta {
   background: linear-gradient(135deg, var(--deep-navy) 0%, var(--slate) 100%);
