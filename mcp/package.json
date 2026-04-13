@@ -1,0 +1,42 @@
+{
+  "name": "firecrawl-deep-search",
+  "version": "1.0.0",
+  "description": "A professional MCP server for deep web research with Firecrawl, Stripe payments, and Google Drive auto-save",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mcp",
+    "firecrawl",
+    "stripe",
+    "google-drive",
+    "deep-research",
+    "opentui",
+    "cli"
+  ],
+  "author": "toofargone.trading@gmail.com",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@mendable/firecrawl-js": "^4.18.0",
+    "@opentui/core": "^0.1.97",
+    "@composio/core": "^0.6.8",
+    "@composio/google": "^0.6.8",
+    "dotenv": "^17.4.1",
+    "stripe": "^22.0.0",
+    "uuid": "^13.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

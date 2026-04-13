@@ -14,23 +14,34 @@ AI Agency website and services platform.
 ```
 logiclemonai/
 ├── landing/           # React + TypeScript landing page
+├── mcp/               # MCP server (Firecrawl, Stripe, Google Drive)
 └── .env               # Environment variables
 ```
 
-## Development
+## Landing Page
 
 ```bash
 cd landing
 npm install
 npm run dev
-```
-
-## Build
-
-```bash
 npm run build
 ```
+
+## MCP Server
+
+```bash
+cd mcp
+bun install
+bun run dev
+```
+
+### MCP Tools
+- **Firecrawl** - Web scraping, crawling, deep research
+- **Stripe** - Payment processing
+- **Google Drive** - Auto-save research results
 
 ## Deployment
 
 Tunnel ID configured in `.env` for Cloudflare deployment.
+
+**Live Site:** https://www.logiclemonai.com

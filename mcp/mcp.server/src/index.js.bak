@@ -1,0 +1,202 @@
+require('dotenv').config(); // Load environment variables from .env file
+const { McpServer } = require("@modelcontextprotocol/sdk/server/mcp.js");
+const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio.js");
+const { z } = require("zod");
+const firecrawl = require("@mendable/firecrawl-js");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || '');
+const { GoogleProvider } = require('@composio/google');
+
+// Initialize Firecrawl app - using the default export which is FirecrawlAppV1
+const firecrawlApp = new firecrawl.default({
+  apiKey: process.env.FIRECRAWL_API_KEY || ''
+});
+
+// Initialize Google Drive client
+const googleDrive = new GoogleDrive({
+  apiKey: process.env.COMPOSIO_API_KEY || '',
+  userId: process.env.COMPOSIO_USER_ID || '',
+});
+
+// Create MCP server
+const server = new McpServer({
+  name: "firecrawl-deep-search-mcp",
+  version: "1.0.0",
+});
+
+// Free tool: basic search (we'll simulate with a simple fetch or limit)
+server.tool(
+  "basic_search",
+  "Perform a basic web search (free tier)",
+  {
+    query: z.string().describe("The search query"),
+    max_results: z.number().int().min(1).max(5).default(3).describe("Maximum number of results to return")
+  },
+  async ({ query, max_results }) => {
+    // For now, we'll return a message indicating this is a placeholder
+    // In future, we could use a free search API or limit Firecrawl usage
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Basic search for "${query}" is available. For full Firecrawl-powered deep research, use the deep_research tool.`
+        }
+      ]
+    };
+  }
+);
+
+// Paid tool: deep research using Firecrawl
+server.tool(
+  "deep_research",
+  "Perform deep research using Firecrawl to scrape and extract content from URLs",
+  {
+    url: z.string().url().describe("The URL to scrape and extract content from"),
+    extractor: z.enum(['llm-extraction', 'css-selector']).optional().describe("Extractor type to use"),
+    prompt: z.string().optional().describe("Custom prompt for LLM extraction (if using llm-extractor)"),
+    payment_session_id: z.string().optional().describe("Stripe Checkout Session ID for payment verification"),
+    save_to_drive: z.boolean().default(true).describe('Whether to save results to Google Drive')
+  },
+  async ({ url, extractor, prompt, payment_session_id, save_to_drive }) => {
+    // Require payment verification
+    if (!payment_session_id) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "Error: Payment required. Please provide a payment_session_id from a completed Stripe Checkout session."
+          }
+        ],
+        isError: true
+      };
+    }
+
+    try {
+      const session = await stripe.checkout.sessions.retrieve(payment_session_id);
+      if (session.payment_status !== 'paid') {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: Payment not completed. Status: ${session.payment_status}`
+            }
+          ],
+          isError: true
+        };
+      }
+    } catch (err) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error verifying payment: ${err.message}`
+          }
+        ],
+        isError: true
+      };
+    }
+
+    try {
+      // Prepare extractor options
+      let extractorOptions = {};
+      if (extractor === 'llm-extraction') {
+        extractorOptions = { 
+          extraction: { 
+            mode: 'llm-extraction',
+            ...(prompt && { prompt })
+          } 
+        };
+      } else if (extractor === 'css-selector') {
+        // For CSS selector, we'd need selectors - for now, we'll note this needs implementation
+        extractorOptions = { 
+          extraction: { 
+            mode: 'css-selector'
+          } 
+        };
+      }
+
+      // Scrape the URL with Firecrawl
+      const scrapeResult = await firecrawlApp.scrapeUrl(url, {
+        ...extractorOptions,
+        // Only get what we need to keep response size reasonable
+        formats: ['markdown', 'html'],
+        onlyMainContent: true
+      });
+
+      if (! scrapeResult.success) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Failed to scrape URL: ${url}. Error: ${scrapeResult.error || 'Unknown error'}`
+            }
+          ],
+          isError: true
+        };
+      }
+
+      // Save to Google Drive if requested
+      let fileLink = null;
+      if (save_to_drive) {
+        try {
+          const filename = `research-${encodeURIComponent(url)}-${Date.now()}.md`;
+          const fileResponse = await googleDrive.create_file({
+            requestBody: {
+              name: filename,
+              mimeType: 'text/markdown'
+            },
+            media: {
+              mimeType: 'text/markdown',
+              body: scrapeResult.data.markdown || '# No content extracted'
+            }
+          });
+          
+          // Get shareable link
+          const permissionResponse = await googleDrive.create_permission({
+            fileId: fileResponse.data.id,
+            requestBody: {
+              type: 'anyone',
+              role: 'reader'
+            }
+          });
+          
+          fileLink = `https://drive.google.com/file/d/${fileResponse.data.id}/view`;
+        } catch (driveError) {
+          console.error('Google Drive error:', driveError.message);
+          // Continue without Drive link if saving fails
+        }
+      }
+
+      // Return the extracted content with optional Google Drive link
+      return {
+        content: [
+          {
+            type: "text",
+            text: `# Deep Research Results for ${url}\n\n${scrapeResult.data.markdown || 'No markdown content available'}\n\n${fileLink ? `\n---\n📁 Saved to Google Drive: ${fileLink}` : ''}\n\n---\n*Extracted via Firecrawl MCP Server*`
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error during deep research: ${error.message}`
+          }
+        ],
+        isError: true
+      };
+    }
+  }
+);
+
+// Start the server
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error('Firecrawl Deep Search MCP Server running on stdio');
+}
+
+main().catch((error) => {
+  console.error('Failed to start MCP server:', error);
+  process.exit(1);
+});

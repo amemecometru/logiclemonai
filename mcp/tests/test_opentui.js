@@ -1,0 +1,1 @@
+const opentui = require('@opentui/core'); console.log('Box' in opentui ? 'Box available' : 'Box missing'); console.log('Text' in opentui ? 'Text available' : 'Text missing'); console.log('Input' in opentui ? 'Input available' : 'Input missing'); console.log('Button' in opentui ? 'Button available' : 'Button missing');
