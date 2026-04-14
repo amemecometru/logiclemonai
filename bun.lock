@@ -1,0 +1,14 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "dependencies": {
+        "@chenglou/pretext": "^0.0.5",
+      },
+    },
+  },
+  "packages": {
+    "@chenglou/pretext": ["@chenglou/pretext@0.0.5", "", {}, "sha512-A8GZN10REdFGsyuiUgLV8jjPDDFMg5GmgxGWV0I3igxBOnzj+jgz2VMmVD7g+SFyoctfeqHFxbNatKSzVRWtRg=="],
+  }
+}
