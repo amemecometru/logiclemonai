@@ -1,0 +1,14 @@
+[Unit]
+Description=ClawdyClaw Server
+After=network.target
+
+[Service]
+Type=simple
+User=toofargonetrading
+WorkingDirectory=/home/toofargonetrading/logiclemonai
+ExecStart=/usr/bin/node /home/toofargonetrading/logiclemonai/clawdyclaw/server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
