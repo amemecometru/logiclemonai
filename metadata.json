@@ -1,0 +1,6 @@
+{
+  "name": "AI Tools Assessment & Audit Engine",
+  "description": "An interactive business audit tool that assesses company needs, recommends tailored AI tools, and creates custom implementation roadmaps.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
