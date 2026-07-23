@@ -1,0 +1,22 @@
+name = "ai-auditors"
+main = "server.ts"
+compatibility_date = "2026-01-01"
+
+# Cloudflare will automatically create audit.logiclemonai.com for you!
+routes = [
+  { pattern = "audit.logiclemonai.com", custom_domain = true }
+]
+
+# Serve static frontend UI from dist/
+assets = { directory = "./dist", binding = "ASSETS" }
+
+# KV Namespace Binding
+[[kv_namespaces]]
+binding = "WEBHOOKS_KV"
+id = "5b35c96a0bdd418685bfb6ce68884acd"
+
+# D1 Database Binding
+[[d1_databases]]
+binding = "d1"
+database_name = "logiclemonai-db"
+database_id = "49e1e775-6d6d-4735-89ea-487da5cf2e33"
